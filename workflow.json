@@ -1,0 +1,2278 @@
+{
+  "name": "B2B Client Onboarding System",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "cb8dd262-234c-43e2-a8d9-1f2604821b29",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8adb8438-8875-4ae6-b528-36e0e7a9fe18",
+      "name": "Webhook",
+      "webhookId": "cb8dd262-234c-43e2-a8d9-1f2604821b29"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6be67b38-de60-4b8d-8ce8-0e044f7a1aa5",
+              "leftValue": "={{ $json.body[0].propertyValue }}",
+              "rightValue": "closedwon",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        160,
+        0
+      ],
+      "id": "8d2781f8-d037-484f-bf58-644464572142",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "deal",
+        "operation": "get",
+        "dealId": {
+          "__rl": true,
+          "value": "={{ $json.body[0].objectId }}",
+          "mode": "id"
+        },
+        "filters": {
+          "propertiesCollection": {
+            "propertiesValues": {
+              "properties": [
+                "amount",
+                "closedate",
+                "hs_priority",
+                "hubspot_owner_id",
+                "dealtype",
+                "dealstage",
+                "hs_primary_associated_company",
+                "num_associated_contacts",
+                "dealname",
+                "hs_analytics_latest_source_timestamp_contact"
+              ],
+              "propertyMode": "valueOnly"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.hubspot",
+      "typeVersion": 2.2,
+      "position": [
+        368,
+        -112
+      ],
+      "id": "49ee0adb-5321-4ece-84ba-4e89cce1a265",
+      "name": "Get a deal",
+      "credentials": {
+        "hubspotOAuth2Api": {
+          "id": "6TuIPmHdgh54GzEX",
+          "name": "HubSpot account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "company",
+        "operation": "get",
+        "companyId": {
+          "__rl": true,
+          "value": "={{ $json.associations.associatedCompanyIds[0] }}",
+          "mode": "id"
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.hubspot",
+      "typeVersion": 2.2,
+      "position": [
+        624,
+        -224
+      ],
+      "id": "c2253082-9a9c-478d-baab-53f1f758dbb1",
+      "name": "Get a company",
+      "credentials": {
+        "hubspotOAuth2Api": {
+          "id": "6TuIPmHdgh54GzEX",
+          "name": "HubSpot account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.hubapi.com/crm/v4/objects/deals/{{ $json.dealId }}/associations/contacts",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer pat-na2-1a15ed32-f619-4d66-91d5-b1b0c443f6e4"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        576,
+        0
+      ],
+      "id": "f0281beb-59ca-4414-9c27-0163d6bb2a70",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "get",
+        "contactId": {
+          "__rl": true,
+          "value": "={{ $json.results[0].toObjectId }}",
+          "mode": "id"
+        },
+        "additionalFields": {
+          "propertiesCollection": {
+            "propertiesValues": {
+              "properties": [
+                "city",
+                "hubspot_owner_id",
+                "country",
+                "createdate",
+                "email",
+                "firstname",
+                "industry",
+                "jobtitle",
+                "lastname",
+                "hs_lead_status",
+                "lifecyclestage"
+              ]
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.hubspot",
+      "typeVersion": 2.2,
+      "position": [
+        720,
+        0
+      ],
+      "id": "ae1d98ee-3c3b-49fd-a7c8-73363f7cb90c",
+      "name": "Get a contact",
+      "credentials": {
+        "hubspotOAuth2Api": {
+          "id": "6TuIPmHdgh54GzEX",
+          "name": "HubSpot account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {
+          "clashHandling": {
+            "values": {
+              "resolveClash": "addSuffix"
+            }
+          },
+          "includeUnpaired": true
+        }
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        896,
+        -128
+      ],
+      "id": "6304611b-cf91-40e6-ac6e-37fe51fe9669",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a6a3b766-67ec-486d-9086-97b4ce0c2895",
+              "name": "company_Id",
+              "value": "={{ $json.companyId_1 }}",
+              "type": "number"
+            },
+            {
+              "id": "52def605-a5ee-4184-8f74-d73f7c0428d4",
+              "name": "company_country",
+              "value": "={{ $json.properties_1.country.value }}",
+              "type": "string"
+            },
+            {
+              "id": "d0bd6a63-c3d7-45fd-916d-e858e83442ff",
+              "name": "company_name",
+              "value": "={{ $json.properties_1.name.value }}",
+              "type": "string"
+            },
+            {
+              "id": "39d07758-246f-4c99-ae2b-4df8ba0f1c17",
+              "name": "deal_value",
+              "value": "={{ Number($json.properties_2.hs_forecast_amount.value) }}",
+              "type": "number"
+            },
+            {
+              "id": "5dad386a-ff38-44c8-8d12-78692c394a02",
+              "name": "deal_stage",
+              "value": "={{ $json.properties_2.dealstage.value }}",
+              "type": "string"
+            },
+            {
+              "id": "903c4531-3459-4a30-98a8-d6e7fa689a92",
+              "name": "deal_id",
+              "value": "={{ $json.properties_2.hs_object_id.value }}",
+              "type": "string"
+            },
+            {
+              "id": "5bdd06f3-7b3f-433e-b664-e39a22b3d8a9",
+              "name": "deal_name",
+              "value": "={{ $json.properties_2.dealname.value }}",
+              "type": "string"
+            },
+            {
+              "id": "5fecd328-5e73-4e93-b30e-5f690f9344fd",
+              "name": "contact_email",
+              "value": "={{ $json.properties_3.email.value }}",
+              "type": "string"
+            },
+            {
+              "id": "c40437bd-d9f9-4aa2-84dc-0138c02a7cf6",
+              "name": "contact_full_name",
+              "value": "={{ $json.properties_3.hs_full_name_or_email.value }}",
+              "type": "string"
+            },
+            {
+              "id": "f7a4fee1-fc12-4803-87a8-50009909d721",
+              "name": "contact_id",
+              "value": "={{ $json.properties_3.hs_object_id.value }}",
+              "type": "string"
+            },
+            {
+              "id": "05edf7ab-92db-40a8-995a-34f83bdd1ab6",
+              "name": "company name",
+              "value": "aptagon",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1072,
+        -112
+      ],
+      "id": "c1746399-c90c-482e-9548-1af5228daaf9",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1uzHyTJqXRUpD-aJrGAawvbIbRlXQciFgzebLbBk74ek",
+          "mode": "list",
+          "cachedResultName": "B2B Client Onboarding System",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uzHyTJqXRUpD-aJrGAawvbIbRlXQciFgzebLbBk74ek/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uzHyTJqXRUpD-aJrGAawvbIbRlXQciFgzebLbBk74ek/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Company Name",
+              "lookupValue": "={{ $json.company_name }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1248,
+        -112
+      ],
+      "id": "084bc9ab-3154-4de2-9a84-a6750384500a",
+      "name": "Get row(s) in sheet",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "o10OGF3i2mV3urzQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7167b513-7211-4c22-9034-b961d9bf8e9b",
+              "leftValue": "={{ $json['Company Name'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1440,
+        -112
+      ],
+      "id": "194809ad-e3f4-4471-805c-455edac0fd03",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1uzHyTJqXRUpD-aJrGAawvbIbRlXQciFgzebLbBk74ek",
+          "mode": "list",
+          "cachedResultName": "B2B Client Onboarding System",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uzHyTJqXRUpD-aJrGAawvbIbRlXQciFgzebLbBk74ek/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uzHyTJqXRUpD-aJrGAawvbIbRlXQciFgzebLbBk74ek/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Client ID": "={{ $('Edit Fields').item.json.company_Id }}",
+            "company country": "={{ $('Edit Fields').item.json.company_country }}",
+            "deal name": "={{ $('Edit Fields').item.json.deal_name }}",
+            "deal value": "={{ $('Edit Fields').item.json.deal_value }}",
+            "deal Id ": "={{ $('Edit Fields').item.json.deal_id }}",
+            "row_number": "={{ $json.row_number }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Client ID",
+              "displayName": "Client ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Name",
+              "displayName": "Contact Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company country",
+              "displayName": "company country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "deal name",
+              "displayName": "deal name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "deal value",
+              "displayName": "deal value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "deal Id ",
+              "displayName": "deal Id ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Onboarding Tier",
+              "displayName": "Onboarding Tier",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Drive Folder",
+              "displayName": "Drive Folder",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Asana Project",
+              "displayName": "Asana Project",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1664,
+        -192
+      ],
+      "id": "819d6370-f624-47f3-aeb9-659a50f4faac",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "o10OGF3i2mV3urzQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1uzHyTJqXRUpD-aJrGAawvbIbRlXQciFgzebLbBk74ek",
+          "mode": "list",
+          "cachedResultName": "B2B Client Onboarding System",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uzHyTJqXRUpD-aJrGAawvbIbRlXQciFgzebLbBk74ek/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uzHyTJqXRUpD-aJrGAawvbIbRlXQciFgzebLbBk74ek/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Client ID": "={{ $('Edit Fields').item.json.company_Id }}",
+            "Company Name": "={{ $('Edit Fields').item.json.company_name }}",
+            "company country": "={{ $('Edit Fields').item.json.company_country }}",
+            "Contact Name": "={{ $('Edit Fields').item.json.contact_full_name }}",
+            "Email": "={{ $('Edit Fields').item.json.contact_email }}",
+            "deal name": "={{ $('Edit Fields').item.json.deal_name }}",
+            "deal value": "={{ $('Edit Fields').item.json.deal_value }}",
+            "deal Id ": "={{ $('Edit Fields').item.json.deal_id }}",
+            "Status": "in progress "
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Client ID",
+              "displayName": "Client ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Contact Name",
+              "displayName": "Contact Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "company country",
+              "displayName": "company country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "deal name",
+              "displayName": "deal name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "deal value",
+              "displayName": "deal value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "deal Id ",
+              "displayName": "deal Id ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Onboarding Tier",
+              "displayName": "Onboarding Tier",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Drive Folder",
+              "displayName": "Drive Folder",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Asana Project",
+              "displayName": "Asana Project",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1664,
+        -48
+      ],
+      "id": "c6333518-8b26-4c86-af97-7846e86709c8",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "o10OGF3i2mV3urzQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json['deal value'] }}",
+                    "rightValue": 1000,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lte"
+                    },
+                    "id": "31e9c423-e880-49fc-8a14-1460fd3e3ae5"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Standard Onboarding"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "8ec380fa-8b4b-4868-a279-21f5069b93ac",
+                    "leftValue": "={{ $json['deal value'] }}",
+                    "rightValue": 20000,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lte"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Priority Onboarding"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "15d0ef27-1058-4ae2-b408-12e65062946f",
+                    "leftValue": "={{ $json['deal value'] }}",
+                    "rightValue": 60000,
+                    "operator": {
+                      "type": "number",
+                      "operation": "gte"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Enterprise Onboarding"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1888,
+        -144
+      ],
+      "id": "f74156be-a946-41d4-b64f-6235f3cea077",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "={{ $('Edit Fields').item.json.company_name }}",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1jxv9NcZNNq5UcdbX4rh-MTiB-c12-ju6",
+          "mode": "list",
+          "cachedResultName": "B2B Client Onboarding",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1jxv9NcZNNq5UcdbX4rh-MTiB-c12-ju6"
+        },
+        "options": {
+          "folderColorRgb": "green"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2176,
+        -320
+      ],
+      "id": "e88bfb24-30f8-4a29-9f83-7f95dcbe12e4",
+      "name": "Create folder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "XoO4GVMNlRA9h0Ix",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "project",
+        "operation": "create",
+        "name": "={{ $('Edit Fields').item.json.company_name }}- client onboarding",
+        "workspace": "1217179342419980",
+        "team": "1217179342419982",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.asana",
+      "typeVersion": 1,
+      "position": [
+        2368,
+        -320
+      ],
+      "id": "24a57e7f-a1cd-4bab-b21e-10c35f6d246b",
+      "name": "Create a project",
+      "credentials": {
+        "asanaOAuth2Api": {
+          "id": "NE85rsqMUC1gzTfE",
+          "name": "Asana account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"tasks\": [\n    {\n      \"name\": \"Send Welcome Email\",\n      \"description\": \"Send the customer a welcome email with onboarding information.\"\n    },\n    {\n      \"name\": \"Create Client Folder\",\n      \"description\": \"Create and organize the client's Google Drive folder.\"\n    },\n    {\n      \"name\": \"Collect Client Information\",\n      \"description\": \"Collect and verify required client details and documents.\"\n    },\n    {\n      \"name\": \"Schedule Kickoff Meeting\",\n      \"description\": \"Schedule an introductory kickoff meeting with the client.\"\n    },\n    {\n      \"name\": \"Assign Onboarding Owner\",\n      \"description\": \"Assign an internal team member responsible for managing the onboarding.\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        2544,
+        -320
+      ],
+      "id": "894ed357-76d7-49eb-bb93-b73925c8e56c",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "tasks",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2736,
+        -320
+      ],
+      "id": "cb9f80b0-fd37-45c0-936b-7fb9bfd8ba01",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "workspace": "1217179342419980",
+        "name": "={{ $json.name }}",
+        "otherProperties": {
+          "assignee": "1217179342419968",
+          "notes": "={{ $json.description }}",
+          "projects": "={{ $('Create a project').item.json.gid }}"
+        }
+      },
+      "type": "n8n-nodes-base.asana",
+      "typeVersion": 1,
+      "position": [
+        2928,
+        -320
+      ],
+      "id": "55b54d88-7520-4924-9e25-e59dcdd156e8",
+      "name": "Create a task",
+      "credentials": {
+        "asanaOAuth2Api": {
+          "id": "NE85rsqMUC1gzTfE",
+          "name": "Asana account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Edit Fields').item.json.contact_email }}",
+        "subject": "Welcome — Your Client Onboarding Has Started",
+        "emailType": "text",
+        "message": "=Company: {{ $('Edit Fields').item.json.company_name }}\nClient name: {{ $('Edit Fields').item.json.contact_full_name }}\nOnboarding tier: {{ $('Edit Fields').item.json.deal_stage }}\nNext steps are going to be taken as scheduled ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        3120,
+        -320
+      ],
+      "id": "1ecd3e7d-a86f-45d8-88e7-8bf416f5e8dc",
+      "name": "Send a message",
+      "webhookId": "a80ed794-1edc-459c-8a11-007362f32586",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "7fKllvlXd4YeeeoO",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0BQKBAA96J",
+          "mode": "list",
+          "cachedResultName": "client-onboarding"
+        },
+        "text": "=🎉 New Client Onboarding  Company: {{ $('Edit Fields').item.json.company_name }} Contact: {{ $('Edit Fields').item.json.contact_full_name }}  Deal Value: {{ $('Edit Fields').item.json.deal_value }} Tier: {{ $('Edit Fields').item.json.deal_stage }}  Google Drive: {{ $('Create folder').item.json.id }} Created Asana: projects and tasks,Created Welcome Email: Sent",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.5,
+      "position": [
+        3328,
+        -320
+      ],
+      "id": "e2f8a978-d913-457d-978a-11751047bbfd",
+      "name": "Send a message1",
+      "webhookId": "e61ce10b-d870-407d-9efd-2fd8132b2dfa",
+      "executeOnce": true,
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "StAWCKDhKZerOLu9",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "={{ $('Edit Fields').item.json.company_name }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1jxv9NcZNNq5UcdbX4rh-MTiB-c12-ju6",
+          "mode": "list",
+          "cachedResultName": "B2B Client Onboarding",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1jxv9NcZNNq5UcdbX4rh-MTiB-c12-ju6"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2176,
+        -128
+      ],
+      "id": "9d506584-9c65-4524-8197-3a8df1f754ce",
+      "name": "Create folder1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "XoO4GVMNlRA9h0Ix",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "project",
+        "operation": "create",
+        "name": "={{ $('Edit Fields').item.json.company_name }}",
+        "workspace": "1217179342419980",
+        "team": "1217179342419982",
+        "additionalFields": {
+          "color": "light-teal"
+        }
+      },
+      "type": "n8n-nodes-base.asana",
+      "typeVersion": 1,
+      "position": [
+        2368,
+        -128
+      ],
+      "id": "ec70c7af-edf6-428b-88d2-45212e4a064e",
+      "name": "Create a project1",
+      "credentials": {
+        "asanaOAuth2Api": {
+          "id": "NE85rsqMUC1gzTfE",
+          "name": "Asana account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"tasks\": [\n    {\n      \"name\": \"Send Priority Welcome Email\",\n      \"description\": \"Send the customer a priority welcome email with onboarding information and next steps.\"\n    },\n    {\n      \"name\": \"Create Client Folder\",\n      \"description\": \"Create and organize the client's Google Drive folder for priority onboarding documents.\"\n    },\n    {\n      \"name\": \"Collect Client Information\",\n      \"description\": \"Collect and verify all required client details and documents.\"\n    },\n    {\n      \"name\": \"Schedule Priority Kickoff Meeting\",\n      \"description\": \"Schedule an early kickoff meeting with the client and onboarding team.\"\n    },\n    {\n      \"name\": \"Assign Priority Onboarding Owner\",\n      \"description\": \"Assign an internal team member to manage and monitor the priority onboarding process.\"\n    },\n    {\n      \"name\": \"Configure Client Requirements\",\n      \"description\": \"Review and configure the client's required services, access, and onboarding requirements.\"\n    },\n    {\n      \"name\": \"Priority Onboarding Review\",\n      \"description\": \"Perform a final review of onboarding progress and confirm all priority requirements are completed.\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        2544,
+        -128
+      ],
+      "id": "93aefc9a-613b-4c02-a50a-f497dcbcffbb",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "tasks",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2736,
+        -128
+      ],
+      "id": "2cdd4a83-c07e-459b-b322-6c7000561e77",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "workspace": "1217179342419980",
+        "name": "={{ $json.name }}",
+        "otherProperties": {
+          "assignee": "1217177959005657",
+          "notes": "={{ $json.description }}",
+          "projects": "={{ $('Create a project1').item.json.gid }}"
+        }
+      },
+      "type": "n8n-nodes-base.asana",
+      "typeVersion": 1,
+      "position": [
+        2928,
+        -128
+      ],
+      "id": "e739c49a-5c4a-40c7-8c1a-48f41daaa33d",
+      "name": "Create a task1",
+      "credentials": {
+        "asanaOAuth2Api": {
+          "id": "NE85rsqMUC1gzTfE",
+          "name": "Asana account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Edit Fields').item.json.contact_email }}",
+        "subject": "Welcome — Your Client Onboarding Has Started",
+        "emailType": "text",
+        "message": "=Company :{{ $('Edit Fields').item.json.company_name }} \nClient name : {{ $('Edit Fields').item.json.contact_full_name }}\nOnboarding tier:{{ $('Edit Fields').item.json.deal_stage }}\nNext steps are going to be done as schedule ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        3120,
+        -128
+      ],
+      "id": "0f4c2f01-f6fc-41ab-a95c-d57069a53198",
+      "name": "Send a message2",
+      "webhookId": "2bba243b-4552-4346-98f4-dfda775fe8da",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "7fKllvlXd4YeeeoO",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0BQKBAA96J",
+          "mode": "list",
+          "cachedResultName": "client-onboarding"
+        },
+        "text": "=🎉 New Client Onboarding  Company: {{ $('Edit Fields').item.json.company_name }} Contact: {{ $('Edit Fields').item.json.contact_full_name }} Deal Value:{{ $('Edit Fields').item.json.deal_value }} Tier: {{ $('Edit Fields').item.json.deal_stage }} Google Drive: {{ $('Create folder1').item.json.id }} Created Asana:projects and tasks ,Created Welcome Email: Sent",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.5,
+      "position": [
+        3328,
+        -128
+      ],
+      "id": "6968c8be-48ac-4291-b100-3949ed59fbd1",
+      "name": "Send a message3",
+      "webhookId": "ad60457e-8757-4f00-9236-bc229c878253",
+      "executeOnce": true,
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "StAWCKDhKZerOLu9",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1uzHyTJqXRUpD-aJrGAawvbIbRlXQciFgzebLbBk74ek",
+          "mode": "list",
+          "cachedResultName": "B2B Client Onboarding System",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uzHyTJqXRUpD-aJrGAawvbIbRlXQciFgzebLbBk74ek/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uzHyTJqXRUpD-aJrGAawvbIbRlXQciFgzebLbBk74ek/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Drive Folder": "={{ $('Create folder1').item.json.id }}",
+            "Asana Project": "={{ $('Create a project1').item.json.gid }}",
+            "Onboarding Tier": "Priority",
+            "Client ID": "={{ $('Append row in sheet').item.json['Client ID'] }}"
+          },
+          "matchingColumns": [
+            "Client ID"
+          ],
+          "schema": [
+            {
+              "id": "Client ID",
+              "displayName": "Client ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Name",
+              "displayName": "Contact Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company country",
+              "displayName": "company country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "deal name",
+              "displayName": "deal name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "deal value",
+              "displayName": "deal value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "deal Id ",
+              "displayName": "deal Id ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Onboarding Tier",
+              "displayName": "Onboarding Tier",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Drive Folder",
+              "displayName": "Drive Folder",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Asana Project",
+              "displayName": "Asana Project",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3520,
+        -128
+      ],
+      "id": "4629e974-75ce-4915-b1ee-2e37a20c2a91",
+      "name": "Update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "o10OGF3i2mV3urzQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "={{ $('Edit Fields').item.json.company_name }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1jxv9NcZNNq5UcdbX4rh-MTiB-c12-ju6",
+          "mode": "list",
+          "cachedResultName": "B2B Client Onboarding",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1jxv9NcZNNq5UcdbX4rh-MTiB-c12-ju6"
+        },
+        "options": {
+          "folderColorRgb": "blue"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2176,
+        48
+      ],
+      "id": "2886dd69-f387-4742-9a29-2c3b6e79e8d5",
+      "name": "Create folder2",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "XoO4GVMNlRA9h0Ix",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "project",
+        "operation": "create",
+        "name": "={{ $('Edit Fields').item.json.company_name }}",
+        "workspace": "1217179342419980",
+        "team": "1217179342419982",
+        "additionalFields": {
+          "color": "light-yellow"
+        }
+      },
+      "type": "n8n-nodes-base.asana",
+      "typeVersion": 1,
+      "position": [
+        2368,
+        48
+      ],
+      "id": "58ec395d-c558-4b8f-a39a-bc85e30401db",
+      "name": "Create a project2",
+      "credentials": {
+        "asanaOAuth2Api": {
+          "id": "NE85rsqMUC1gzTfE",
+          "name": "Asana account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"tasks\": [\n    {\n      \"name\": \"Send Enterprise Welcome Email\",\n      \"description\": \"Send a personalized welcome email to the enterprise client with onboarding details, contacts, and next steps.\"\n    },\n    {\n      \"name\": \"Create Enterprise Client Folder\",\n      \"description\": \"Create and organize a dedicated Google Drive folder for enterprise documents and resources.\"\n    },\n    {\n      \"name\": \"Collect Enterprise Client Information\",\n      \"description\": \"Collect and verify all required enterprise client information, documents, requirements, and stakeholders.\"\n    },\n    {\n      \"name\": \"Schedule Executive Kickoff Meeting\",\n      \"description\": \"Schedule a kickoff meeting with the client stakeholders, account team, and onboarding team.\"\n    },\n    {\n      \"name\": \"Assign Enterprise Onboarding Team\",\n      \"description\": \"Assign responsible team members and define ownership for the enterprise onboarding process.\"\n    },\n    {\n      \"name\": \"Configure Enterprise Requirements\",\n      \"description\": \"Review and configure enterprise-specific services, integrations, access, security, and technical requirements.\"\n    },\n    {\n      \"name\": \"Stakeholder Alignment\",\n      \"description\": \"Confirm responsibilities, communication channels, timelines, deliverables, and key stakeholders.\"\n    },\n    {\n      \"name\": \"Enterprise Implementation Setup\",\n      \"description\": \"Coordinate the initial implementation and setup according to the client's approved requirements.\"\n    },\n    {\n      \"name\": \"Enterprise Onboarding Review\",\n      \"description\": \"Conduct a detailed review of onboarding progress and resolve any outstanding requirements.\"\n    },\n    {\n      \"name\": \"Final Client Handoff\",\n      \"description\": \"Complete the final handoff to the account or customer success team and confirm the client is fully onboarded.\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        2560,
+        48
+      ],
+      "id": "8782d8d3-b558-4441-8eb2-94218a35ec13",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "tasks",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2736,
+        48
+      ],
+      "id": "770ac1dd-bf27-42c7-971e-3ccae2f12f65",
+      "name": "Split Out2"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "workspace": "1217179342419980",
+        "name": "={{ $json.name }}",
+        "otherProperties": {
+          "assignee": "1216351569740956",
+          "notes": "={{ $json.description }}",
+          "projects": "={{ $('Create a project2').item.json.gid }}"
+        }
+      },
+      "type": "n8n-nodes-base.asana",
+      "typeVersion": 1,
+      "position": [
+        2928,
+        48
+      ],
+      "id": "f7d0171b-9a64-4be5-a4e7-874c4293e6af",
+      "name": "Create a task2",
+      "credentials": {
+        "asanaOAuth2Api": {
+          "id": "NE85rsqMUC1gzTfE",
+          "name": "Asana account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Edit Fields').item.json.contact_email }}",
+        "subject": "Welcome — Your Client Onboarding Has Started",
+        "emailType": "text",
+        "message": "=Client name:{{ $('Edit Fields').item.json.contact_full_name }} \nCompany name: {{ $('Edit Fields').item.json.company_name }}\nOnboarding tier: {{ $('Edit Fields').item.json.deal_stage }}\nNext steps will be as scheduled",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        3120,
+        48
+      ],
+      "id": "4f90af04-9882-4bcf-8f9f-41d317ae8b84",
+      "name": "Send a message4",
+      "webhookId": "5dcbe671-cdb0-4569-87fd-a29bc0f57200",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "7fKllvlXd4YeeeoO",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0BQKBAA96J",
+          "mode": "list",
+          "cachedResultName": "client-onboarding"
+        },
+        "text": "=🎉 New Client Onboarding Started \n Client:{{ $('Edit Fields').item.json.company_name }}\nDeal Value: {{ $('Edit Fields').item.json.deal_value }}\nTier: Enterprise\nContact:{{ $('Edit Fields').item.json.contact_full_name }}\nEmail:{{ $('Edit Fields').item.json.contact_email }}\nDrive folder: {{ $('Create folder2').item.json.id }} created\nAsana project: created\nWelcome email: sent ",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.5,
+      "position": [
+        3328,
+        48
+      ],
+      "id": "37f1c3e1-4623-4700-91d1-b9dbff38fbb5",
+      "name": "Send a message5",
+      "webhookId": "41595780-4d14-4e63-ab68-ee40d2d9099b",
+      "executeOnce": true,
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "StAWCKDhKZerOLu9",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1uzHyTJqXRUpD-aJrGAawvbIbRlXQciFgzebLbBk74ek",
+          "mode": "list",
+          "cachedResultName": "B2B Client Onboarding System",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uzHyTJqXRUpD-aJrGAawvbIbRlXQciFgzebLbBk74ek/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uzHyTJqXRUpD-aJrGAawvbIbRlXQciFgzebLbBk74ek/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Onboarding Tier": "Enterprise",
+            "Drive Folder": "={{ $('Create folder2').item.json.id }}",
+            "Asana Project": "={{ $('Create a project2').item.json.gid }}",
+            "Client ID": "={{ $('Edit Fields').item.json.company_Id }}"
+          },
+          "matchingColumns": [
+            "Client ID"
+          ],
+          "schema": [
+            {
+              "id": "Client ID",
+              "displayName": "Client ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Name",
+              "displayName": "Contact Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company country",
+              "displayName": "company country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "deal name",
+              "displayName": "deal name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "deal value",
+              "displayName": "deal value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "deal Id ",
+              "displayName": "deal Id ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Onboarding Tier",
+              "displayName": "Onboarding Tier",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Drive Folder",
+              "displayName": "Drive Folder",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Asana Project",
+              "displayName": "Asana Project",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3520,
+        48
+      ],
+      "id": "1e10a022-28b8-404d-9ba1-0b697c8b7423",
+      "name": "Update row in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "o10OGF3i2mV3urzQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1uzHyTJqXRUpD-aJrGAawvbIbRlXQciFgzebLbBk74ek",
+          "mode": "list",
+          "cachedResultName": "B2B Client Onboarding System",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uzHyTJqXRUpD-aJrGAawvbIbRlXQciFgzebLbBk74ek/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uzHyTJqXRUpD-aJrGAawvbIbRlXQciFgzebLbBk74ek/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Onboarding Tier": "Standard",
+            "Drive Folder": "={{ $('Create folder').item.json.id }}",
+            "Asana Project": "={{ $('Create a project').item.json.gid }}",
+            "Client ID": "={{ $('Edit Fields').item.json.company_Id }}"
+          },
+          "matchingColumns": [
+            "Client ID"
+          ],
+          "schema": [
+            {
+              "id": "Client ID",
+              "displayName": "Client ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Name",
+              "displayName": "Contact Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company country",
+              "displayName": "company country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "deal name",
+              "displayName": "deal name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "deal value",
+              "displayName": "deal value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "deal Id ",
+              "displayName": "deal Id ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Onboarding Tier",
+              "displayName": "Onboarding Tier",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Drive Folder",
+              "displayName": "Drive Folder",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Asana Project",
+              "displayName": "Asana Project",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3520,
+        -320
+      ],
+      "id": "1fb00e30-47d7-4c28-a0be-8d63377457a4",
+      "name": "Update row in sheet3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "o10OGF3i2mV3urzQ",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get a deal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a deal": {
+      "main": [
+        [
+          {
+            "node": "Get a company",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Get a contact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a contact": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Get a company": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Create folder",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create folder1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create folder2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create folder": {
+      "main": [
+        [
+          {
+            "node": "Create a project",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a project": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Create a task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a task": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create folder1": {
+      "main": [
+        [
+          {
+            "node": "Create a project1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a project1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Create a task1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a task1": {
+      "main": [
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message2": {
+      "main": [
+        [
+          {
+            "node": "Send a message3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message3": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create folder2": {
+      "main": [
+        [
+          {
+            "node": "Create a project2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a project2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Split Out2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out2": {
+      "main": [
+        [
+          {
+            "node": "Create a task2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a task2": {
+      "main": [
+        [
+          {
+            "node": "Send a message4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message4": {
+      "main": [
+        [
+          {
+            "node": "Send a message5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message5": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "hj3QJrYKIRHcCm6Y",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "710951b6-e020-4202-85ce-a50761a87c0e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3e9bc5f31543b38f3f3e621629a57de9364a6484f5dca267a394baeed0e6ebe5"
+  },
+  "nodeGroups": [],
+  "id": "4W711UQjBfy88m4n",
+  "tags": []
+}
