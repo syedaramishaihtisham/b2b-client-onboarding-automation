@@ -547,6 +547,12 @@ No onboarding resources should be created.
 ### 📧 Email
 ![Client Email](screenshots/client_email.png)
 
+### Error Handling Workflow
+![Error Handling Workflow](screenshots/error-handling-workflow.png)
+
+### Error Handling Log
+![Error Handling Log](screenshots/error-handling-log.png)
+
 ---
 ## 📂 Repository Structure
 
