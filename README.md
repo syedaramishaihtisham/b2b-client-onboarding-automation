@@ -529,6 +529,15 @@ No onboarding resources should be created.
 ### 📁 Google Drive
 ![Google Drive](screenshots/google_drive.png)
 
+###  Standard Onboarding
+![Standard Onboarding](screenshots/standard-onboarding.png)
+
+### Priority Onboarding
+![Priority Onboarding](screenshots/priority-onboarding.png)
+
+### Enterprise Onboarding
+![Enterprise Onboarding](screenshots/enterprise-onboarding.png)
+
 ### 📋 Asana
 ![Asana Project](screenshots/asana_project.png)
 
