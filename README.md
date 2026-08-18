@@ -509,71 +509,36 @@ Expected result:
 No onboarding resources should be created.
 
 ---
-
 ## 📸 Screenshots
 
-### Workflow Overview
+### 🔄 Workflow
+![B2B Client Onboarding Workflow](screenshots/b2b_client_onboarding_workflow.png)
 
-![Workflow Overview](screenshots/01-workflow-overview.png)
+### 🏢 HubSpot Company
+![HubSpot Company](screenshots/hubspot_company.png)
 
-### HubSpot Deal
+### 👤 HubSpot Contact
+![HubSpot Contact](screenshots/hubspot_contact.png)
 
-![HubSpot Deal](screenshots/02-hubspot-deal.png)
+### 💼 HubSpot Deal
+![HubSpot Deal](screenshots/hubspot_deal.png)
 
-### HubSpot Company
+### 📊 Google Sheets
+![Google Sheets](screenshots/google_sheets.png)
 
-![HubSpot Company](screenshots/03-hubspot-company.png)
+### 📁 Google Drive
+![Google Drive](screenshots/google_drive.png)
 
-### HubSpot Contact
+### 📋 Asana
+![Asana Project](screenshots/asana_project.png)
 
-![HubSpot Contact](screenshots/04-hubspot-contact.png)
+### 💬 Slack
+![Slack Notification](screenshots/slack_notification.png)
 
-### Merge Data
-
-![Merge Data](screenshots/05-merge-data.png)
-
-### Edit Fields
-
-![Edit Fields](screenshots/06-edit-fields.png)
-
-### Existing Client Check
-
-![Existing Client Check](screenshots/07-existing-client-check.png)
-
-### Deal Value Routing
-
-![Deal Value Routing](screenshots/08-deal-value-routing.png)
-
-### Google Drive Folder
-
-![Google Drive Folder](screenshots/09-google-drive-folder.png)
-
-### Asana Project
-
-![Asana Project](screenshots/10-asana-project.png)
-
-### Asana Tasks
-
-![Asana Tasks](screenshots/11-asana-tasks.png)
-
-### Welcome Email
-
-![Welcome Email](screenshots/12-welcome-email.png)
-
-### Slack Notification
-
-![Slack Notification](screenshots/13-slack-notification.png)
-
-### Google Sheets Log
-
-![Google Sheets Log](screenshots/14-google-sheets-log.png)
-
-### Error Handling Test
-
-![Error Handling Test](screenshots/15-error-handling-test.png)
+### 📧 Email
+![Client Email](screenshots/client_email.png)
 
 ---
-
 ## 📂 Repository Structure
 
     B2B-Client-Onboarding-Automation/
@@ -588,10 +553,7 @@ No onboarding resources should be created.
     │   ├── 02-hubspot-deal.png
     │   ├── 03-hubspot-company.png
     │   ├── 04-hubspot-contact.png
-    │   ├── 05-merge-data.png
-    │   ├── 06-edit-fields.png
     │   ├── 07-existing-client-check.png
-    │   ├── 08-deal-value-routing.png
     │   ├── 09-google-drive-folder.png
     │   ├── 10-asana-project.png
     │   ├── 11-asana-tasks.png
